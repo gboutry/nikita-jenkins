@@ -1,0 +1,84 @@
+cluster:
+  networks:
+    lxdbr0public:
+      ipv4.address: 172.16.0.1/24
+      ipv4.nat: true
+      ipv6.address: null
+    lxdbr1private:
+      ipv4.address: 10.10.10.1/24
+      ipv4.nat: true
+      ipv6.address: null
+      dns.domain: nikita.local
+  containers:
+    jenkins:
+      image: images:centos/7
+      disk:
+        nikitadir:
+          source: /tmp/nikita
+          path: /nikita
+      nic:
+        eth0:
+          nictype: bridged
+          parent: lxdbr0public
+        eth1:
+          nictype: bridged
+          parent: lxdbr1private
+          ipv4.address: '10.10.10.10'
+      proxy:
+        ssh:
+          listen: 'tcp:0.0.0.0:2200'
+          connect: 'tcp:127.0.0.1:22'
+        # http:
+        #   listen: 'tcp:0.0.0.0:8080'
+        #   connect: 'tcp:127.0.0.1:8080'
+      ssh:
+        enabled: true
+        #id_rsa: assets/id_rsa
+      user:
+        nikita:
+          sudo: true
+          authorized_keys: assets/id_rsa.pub
+    executor:
+      image: images:centos/7
+      disk:
+        nikitadir:
+          source: /tmp/nikita
+          path: /nikita
+      nic:
+        eth0:
+          nictype: bridged
+          parent: lxdbr0public
+        eth1:
+          nictype: bridged
+          parent: lxdbr1private
+          ipv4.address: '10.10.10.11'
+      proxy:
+        ssh:
+          listen: 'tcp:0.0.0.0:2201'
+          connect: 'tcp:127.0.0.1:22'
+      ssh:
+        enabled: true
+        #id_rsa: assets/id_rsa
+      user:
+        nikita:
+          sudo: true
+          authorized_keys: assets/id_rsa.pub
+jenkins:
+  ssh:
+    host: jenkins.lxd
+    port: 22
+    private_key_path: "assets/id_rsa"
+    username: "nikita"
+  jenkins_user:
+    name: jenkins
+    uid: 1000
+    gid: 1000
+    home: /var/lib/jenkins
+  admin:
+    username: admin
+    password: admin
+  java_options: -Djenkins.install.runSetupWizard=false
+  jenkinsPlugins:
+    - ansicolor
+    - git
+    - workflow-aggregator

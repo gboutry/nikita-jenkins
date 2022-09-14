@@ -1,0 +1,23 @@
+{
+  "name": "nikita-jenkins",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "nikita": "^1.0.0-alpha.3",
+    "node-fetch-commonjs": "^3.1.1"
+  },
+  "devDependencies": {
+    "coffeescript": "^2.6.1"
+  },
+  "scripts": {
+    "jenkins": "npx run app.js",
+    "build": "coffee -b -o lib src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "gboutry",
+  "license": "ISC"
+}
